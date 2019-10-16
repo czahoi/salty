@@ -961,14 +961,14 @@ Install_Libsodium(){
 	if [[ -e ${Libsodiumr_file} ]]; then
 		echo -e "${Error} libsodium 已安装 , 是否覆盖安装(更新)？[y/N]"
 		read -e -p "(默认: n):" yn
-		[[ -z ${yn} ]] && yn="n"
+		[[ -z ${yn} ]] && yn="y"
 		if [[ ${yn} == [Nn] ]]; then
 			echo "已取消..." && exit 1
 		fi
 	else
 		echo -e "${Info} libsodium 未安装，开始安装..."
 	fi
-	Check_Libsodium_ver
+
 	if [[ ${release} == "centos" ]]; then
 		yum update
 		echo -e "${Info} 安装依赖..."
