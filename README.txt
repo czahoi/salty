@@ -12,7 +12,7 @@
 7、还有些记不清了.....
 
 修复情况
-1、ss/ssr qr link（二维码失效    已修复（更换为我自己的qr，qr地址：qr.salty.ml）
+1、ss/ssr qr link（二维码失效    已修复（更换为我自己的qr，qr地址：https://qr.salty.ml）
 2、网络和密码学库（libsodium）安装失败    已修复（替换为官网版本）
 3、不支持centos7自动放行端口    已修复（重写防火墙的部分）
 4、centos bbr安装失败    已修复（替换为秋水逸冰的脚本，并重写bbr部分，秋水bbr地址：https://teddysun.com/489.html）
