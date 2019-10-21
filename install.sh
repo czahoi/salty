@@ -656,7 +656,7 @@ crack() {
 clean() {
   rm -rf install.sh
   rm -rf update.sh
-  rm -rf /www/server/panel/plugin/btyw /root/.pip /root/.pydistutils.cfg
+  rm -rf /www/server/panel/plugin/btyw /www/server/panel/plugin/safelogin /www/server/panel/plugin/beta /www/server/panel/plugin/score /root/.pip /root/.pydistutils.cfg
 }
 
 crack
