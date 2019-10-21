@@ -1,3 +1,4 @@
+ssrmu.sh
 说一下
 逗比由于不可抗拒原因所导致ssrmu.sh脚本部分失效，本人进行修复。
 原ssrmu.sh脚本地址：https://github.com/ToyoDAdoubiBackup/doubi
@@ -27,3 +28,6 @@ BUG
 ps:部分资源指ssr主程序和jq解析器和管理脚本
 
 逗比的ssr主程序下载地址：https://github.com/ToyoDAdoubiBackup/shadowsocksr
+
+install.sh
+宝塔面板5.9.x开心版
