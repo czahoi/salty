@@ -577,12 +577,13 @@ Install_Main(){
 		Install_Deb_Pack
 	fi
 
-	Install_Bt
+	
 	
 	Install_webpy
 	Install_Pip
 	Install_Python_Lib
-
+	Install_Bt
+	
 	Service_Add
 	Set_Firewall
 	
