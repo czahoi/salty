@@ -236,6 +236,11 @@ autoSwap()
 }
 autoSwap
 
+#自动升级系统
+update(){
+yum update -y
+}
+
 #判断kernel-headers组件是否安装
 rpm -qa | grep kernel-headers > kernel-headers.pl
 kernelStatus=`cat kernel-headers.pl`
@@ -297,16 +302,13 @@ Install_pip()
 		if [ ! -f "/usr/bin/easy_install" ];then
 			Install_setuptools
 		fi
-		wget -O pip-9.0.1.tar.gz $download_Url/install/src/pip-9.0.1.tar.gz -T 10
-		tar xvf pip-9.0.1.tar.gz
-		rm -f pip-9.0.1.tar.gz
-		cd pip-9.0.1
-		python setup.py install
-		cd ..
-		rm -rf pip-9.0.1
+		wget -O get-pip.py $download_Url/src/get-pip.py
+		python get-pip.py
+		rm -f get-pip.py
 	fi
 	ispip=`pip -V |grep from`
-	if [ "$ispip" = "" ];then
+	if [ "${pipVersion}" -lt "9" ];then
+		pip install --upgrade pip
 		echo '=================================================';
 		echo -e "\033[31m Python-pip installation failed. \033[0m";
 		exit;
@@ -358,7 +360,6 @@ Install_psutil()
 		exit;
 	fi
 }
-
 Install_mysqldb()
 {
 	isSetup=`python -m MySQLdb 2>&1|grep package`
@@ -440,7 +441,6 @@ if [ "$isPsutil" != "" ];then
 	fi
 fi
 
-pip install pip==9.0.3
 pip install psutil chardet web.py virtualenv
 
 Install_Pillow
@@ -529,7 +529,7 @@ chmod +x $setup_path/server/panel/certbot-auto
 chmod -R +x $setup_path/server/panel/script
 ln -sf /etc/init.d/bt /usr/bin/bt
 echo "$port" > $setup_path/server/panel/data/port.pl
-/etc/init.d/bt start
+
 password=`cat /dev/urandom | head -n 16 | md5sum | head -c 8`
 cd $setup_path/server/panel/
 python tools.py username
@@ -647,10 +647,10 @@ wget -O update.sh http://download.bt.cn/install/update_pro.sh && bash update.sh 
 crack() {
   export Crack_file=/www/server/panel/class/common.py
   echo -e "Crack..."
-  /etc/init.d/bt stop
+  
   sed -i $'164s/panelAuth.panelAuth().get_order_status(None)/{\'status\': \True, \'msg\': {\'endtime\': 32503651199}}/g' ${Crack_file}
   echo > /www/server/panel/data/userInfo.json
-  /etc/init.d/bt start
+  /etc/init.d/bt restart
 }
 
 clean() {
@@ -676,4 +676,3 @@ echo -e "=================================================================="
 endTime=`date +%s`
 ((outTime=($endTime-$startTime)/60))
 echo -e "Time consumed:\033[32m $outTime \033[0mMinute!"
-rm -f install.sh
