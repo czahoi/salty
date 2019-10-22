@@ -529,7 +529,7 @@ chmod +x $setup_path/server/panel/certbot-auto
 chmod -R +x $setup_path/server/panel/script
 ln -sf /etc/init.d/bt /usr/bin/bt
 echo "$port" > $setup_path/server/panel/data/port.pl
-
+/etc/init.d/bt start
 password=`cat /dev/urandom | head -n 16 | md5sum | head -c 8`
 cd $setup_path/server/panel/
 python tools.py username
@@ -647,10 +647,10 @@ wget -O update.sh http://download.bt.cn/install/update_pro.sh && bash update.sh 
 crack() {
   export Crack_file=/www/server/panel/class/common.py
   echo -e "Crack..."
-  
+  /etc/init.d/bt stop
   sed -i $'164s/panelAuth.panelAuth().get_order_status(None)/{\'status\': \True, \'msg\': {\'endtime\': 32503651199}}/g' ${Crack_file}
   echo > /www/server/panel/data/userInfo.json
-  /etc/init.d/bt restart
+  /etc/init.d/bt start
 }
 
 clean() {
