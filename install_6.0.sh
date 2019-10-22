@@ -588,7 +588,7 @@ Install_Main(){
 
 	Install_Bt
 	
-	
+	Install_webpy
 	Install_Pip
 	Install_Python_Lib
 
