@@ -128,7 +128,7 @@ get_node_url(){
 		NODE_URL=${urls[$j]}
 	fi
 	download_Url=$NODE_URL
-	echo "Download node: $download_Url";
+	echo "Download node: ${download_Url}";
 	echo '---------------------------------------------';
 }
 Remove_Package(){
@@ -238,76 +238,97 @@ Install_Deb_Pack(){
 	fi
 }
 Install_Bt(){
-	setup_path="/www"
-	panelPort="8888"
-	if [ -f ${setup_path}/server/panel/data/port.pl ];then
-		panelPort=$(cat ${setup_path}/server/panel/data/port.pl)
+mkdir -p ${setup_path}/server/panel/logs
+mkdir -p ${setup_path}/server/panel/vhost/apache
+mkdir -p ${setup_path}/server/panel/vhost/nginx
+mkdir -p ${setup_path}/server/panel/vhost/rewrite
+wget -O ${setup_path}/server/panel/certbot-auto ${download_Url}/install/certbot-auto.init -T 5
+chmod +x ${setup_path}/server/panel/certbot-auto
+
+
+if [ -f '/etc/init.d/bt' ];then
+	/etc/init.d/bt stop
+fi
+rm -f /dev/shm/session.db
+mkdir -p /www/server
+mkdir -p /www/wwwroot
+mkdir -p /www/wwwlogs
+mkdir -p /www/backup/database
+mkdir -p /www/backup/site
+
+if [ ! -f "/usr/bin/unzip" ];then
+	#rm -f /etc/yum.repos.d/epel.repo
+	yum install unzip -y
+fi
+wget -O panel.zip ${download_Url}/install/src/panel.zip -T 10
+wget -O /etc/init.d/bt ${download_Url}/install/src/bt.init -T 10
+if [ -f "${setup_path}/server/panel/data/default.db" ];then
+	if [ -d "/${setup_path}/server/panel/old_data" ];then
+		rm -rf ${setup_path}/server/panel/old_data
 	fi
-	mkdir -p ${setup_path}/server/panel/logs
-	mkdir -p ${setup_path}/server/panel/vhost/apache
-	mkdir -p ${setup_path}/server/panel/vhost/nginx
-	mkdir -p ${setup_path}/server/panel/vhost/rewrite
-	mkdir -p ${setup_path}/server/panel/install
-	mkdir -p /www/server
-	mkdir -p /www/wwwroot
-	mkdir -p /www/wwwlogs
-	mkdir -p /www/backup/database
-	mkdir -p /www/backup/site
+	mkdir -p ${setup_path}/server/panel/old_data
+	mv -f ${setup_path}/server/panel/data/default.db ${setup_path}/server/panel/old_data/default.db
+	mv -f ${setup_path}/server/panel/data/system.db ${setup_path}/server/panel/old_data/system.db
+	mv -f ${setup_path}/server/panel/data/aliossAs.conf ${setup_path}/server/panel/old_data/aliossAs.conf
+	mv -f ${setup_path}/server/panel/data/qiniuAs.conf ${setup_path}/server/panel/old_data/qiniuAs.conf
+	mv -f ${setup_path}/server/panel/data/iplist.txt ${setup_path}/server/panel/old_data/iplist.txt
+	mv -f ${setup_path}/server/panel/data/port.pl ${setup_path}/server/panel/old_data/port.pl
+fi
 
-	if [ ! -f "/usr/bin/unzip" ]; then
-		if [ "${PM}" = "yum" ]; then
-			yum install unzip -y
-		elif [ "${PM}" = "apt-get" ]; then
-			apt-get install unzip -y
-		fi
+unzip -o panel.zip -d ${setup_path}/server/ > /dev/null
+
+if [ -d "${setup_path}/server/panel/old_data" ];then
+	mv -f ${setup_path}/server/panel/old_data/default.db ${setup_path}/server/panel/data/default.db
+	mv -f ${setup_path}/server/panel/old_data/system.db ${setup_path}/server/panel/data/system.db
+	mv -f ${setup_path}/server/panel/old_data/aliossAs.conf ${setup_path}/server/panel/data/aliossAs.conf
+	mv -f ${setup_path}/server/panel/old_data/qiniuAs.conf ${setup_path}/server/panel/data/qiniuAs.conf
+	mv -f ${setup_path}/server/panel/old_data/iplist.txt ${setup_path}/server/panel/data/iplist.txt
+	mv -f ${setup_path}/server/panel/old_data/port.pl ${setup_path}/server/panel/data/port.pl
+	
+	if [ -d "/${setup_path}/server/panel/old_data" ];then
+		rm -rf ${setup_path}/server/panel/old_data
 	fi
+fi
 
-	if [ -f "/etc/init.d/bt" ]; then
-		/etc/init.d/bt stop
-		sleep 1
-	fi
+rm -f panel.zip
 
-	wget -O panel.zip ${download_Url}/install/src/panel.zip -T 10
-	wget -O /etc/init.d/bt ${download_Url}/install/src/bt.init -T 10
-	wget -O /www/server/panel/install/public.sh http://download.bt.cn/install/public.sh -T 10
+if [ ! -f ${setup_path}/server/panel/tools.py ];then
+	echo -e "\033[31mERROR: Failed to download, please try again!\033[0m";
+	echo '============================================'
+	exit;
+fi
 
-	if [ -f "${setup_path}/server/panel/data/default.db" ];then
-		if [ -d "/${setup_path}/server/panel/old_data" ];then
-			rm -rf ${setup_path}/server/panel/old_data
-		fi
-		mkdir -p ${setup_path}/server/panel/old_data
-		mv -f ${setup_path}/server/panel/data/default.db ${setup_path}/server/panel/old_data/default.db
-		mv -f ${setup_path}/server/panel/data/system.db ${setup_path}/server/panel/old_data/system.db
-		mv -f ${setup_path}/server/panel/data/port.pl ${setup_path}/server/panel/old_data/port.pl
-		mv -f ${setup_path}/server/panel/data/admin_path.pl ${setup_path}/server/panel/old_data/admin_path.pl
-	fi
+rm -f ${setup_path}/server/panel/class/*.pyc
+rm -f ${setup_path}/server/panel/*.pyc
+python -m compileall ${setup_path}/server/panel
+#rm -f ${setup_path}/server/panel/class/*.py
+#rm -f ${setup_path}/server/panel/*.py
 
-	unzip -o panel.zip -d ${setup_path}/server/ > /dev/null
 
-	if [ -d "${setup_path}/server/panel/old_data" ];then
-		mv -f ${setup_path}/server/panel/old_data/default.db ${setup_path}/server/panel/data/default.db
-		mv -f ${setup_path}/server/panel/old_data/system.db ${setup_path}/server/panel/data/system.db
-		mv -f ${setup_path}/server/panel/old_data/port.pl ${setup_path}/server/panel/data/port.pl
-		mv -f ${setup_path}/server/panel/old_data/admin_path.pl ${setup_path}/server/panel/data/admin_path.pl
-		if [ -d "/${setup_path}/server/panel/old_data" ];then
-			rm -rf ${setup_path}/server/panel/old_data
-		fi
-	fi
+rm -f /dev/shm/session.db
+chmod +x /etc/init.d/bt
+chkconfig --add bt
+chkconfig --level 2345 bt on
+chmod -R 600 ${setup_path}/server/panel
+chmod +x ${setup_path}/server/panel/certbot-auto
+chmod -R +x ${setup_path}/server/panel/script
+ln -sf /etc/init.d/bt /usr/bin/bt
+echo "$port" > ${setup_path}/server/panel/data/port.pl
+/etc/init.d/bt start
+password=`cat /dev/urandom | head -n 16 | md5sum | head -c 8`
+cd ${setup_path}/server/panel/
+python tools.py username
+username=`python tools.py panel $password`
+cd ~
+echo "$password" > ${setup_path}/server/panel/default.pl
+chmod 600 ${setup_path}/server/panel/default.pl
 
-	rm -f panel.zip
-
-	if [ ! -f ${setup_path}/server/panel/tools.py ];then
-		Red_Error "ERROR: Failed to download, please try install again!"
-	fi
-
-	rm -f ${setup_path}/server/panel/class/*.pyc
-	rm -f ${setup_path}/server/panel/*.pyc
-
-	chmod +x /etc/init.d/bt
-	chmod -R 600 ${setup_path}/server/panel
-	chmod -R +x ${setup_path}/server/panel/script
-	ln -sf /etc/init.d/bt /usr/bin/bt
-	echo "${panelPort}" > ${setup_path}/server/panel/data/port.pl
+isStart=`ps aux |grep 'python main.pyc'|grep -v grep|awk '{print $2}'`
+if [ "$isStart" == '' ];then
+	echo -e "\033[31mERROR: The BT-Panel service startup failed.\033[0m";
+	echo '============================================'
+	exit;
+fi
 }
 Install_Pip(){
 	curl -Ss --connect-timeout 3 -m 60 http://download.bt.cn/install/pip_select.sh|bash
@@ -346,7 +367,7 @@ Install_Pillow()
 			pip install Pillow
 			return;
 		fi
-		wget -O Pillow-3.2.0.zip $download_Url/install/src/Pillow-3.2.0.zip -T 10
+		wget -O Pillow-3.2.0.zip ${download_Url}/install/src/Pillow-3.2.0.zip -T 10
 		unzip Pillow-3.2.0.zip
 		rm -f Pillow-3.2.0.zip
 		cd Pillow-3.2.0
@@ -365,7 +386,7 @@ Install_psutil()
 {
 	isSetup=`python -m psutil 2>&1|grep package`
 	if [ "$isSetup" = "" ];then
-		wget -O psutil-5.2.2.tar.gz $download_Url/install/src/psutil-5.2.2.tar.gz -T 10
+		wget -O psutil-5.2.2.tar.gz ${download_Url}/install/src/psutil-5.2.2.tar.gz -T 10
 		tar xvf psutil-5.2.2.tar.gz
 		rm -f psutil-5.2.2.tar.gz
 		cd psutil-5.2.2
@@ -382,7 +403,7 @@ Install_chardet()
 {
 	isSetup=$(python -m chardet 2>&1|grep package)
 	if [ "${isSetup}" = "" ];then
-		wget -O chardet-2.3.0.tar.gz $download_Url/install/src/chardet-2.3.0.tar.gz -T 10
+		wget -O chardet-2.3.0.tar.gz ${download_Url}/install/src/chardet-2.3.0.tar.gz -T 10
 		tar xvf chardet-2.3.0.tar.gz
 		rm -f chardet-2.3.0.tar.gz
 		cd chardet-2.3.0
@@ -428,31 +449,6 @@ Install_Python_Lib(){
 	Install_chardet
 	pip install gunicorn
 
-}
-
-Set_Bt_Panel(){
-	password=$(cat /dev/urandom | head -n 16 | md5sum | head -c 8)
-	sleep 1
-	admin_auth="/www/server/panel/data/admin_path.pl"
-	if [ ! -f ${admin_auth} ];then
-		auth_path=$(cat /dev/urandom | head -n 16 | md5sum | head -c 8)
-		echo "/${auth_path}" > ${admin_auth}
-	fi
-	auth_path=$(cat ${admin_auth})
-	cd ${setup_path}/server/panel/
-	/etc/init.d/bt start
-	python -m py_compile tools.py
-	python tools.py username
-	username=$(python tools.py panel ${password})
-	cd ~
-	echo "${password}" > ${setup_path}/server/panel/default.pl
-	chmod 600 ${setup_path}/server/panel/default.pl
-	/etc/init.d/bt restart
-	sleep 3
-	isStart=$(ps aux |grep 'gunicorn'|grep -v grep|awk '{print $2}')
-	if [ -z "${isStart}" ];then
-		Red_Error "ERROR: The BT-Panel service startup failed."
-	fi
 }
 Set_Firewall(){
 	sshPort=$(cat /etc/ssh/sshd_config | grep 'Port '|awk '{print $2}')
@@ -576,7 +572,6 @@ Install_Main(){
 	Install_Pip
 	Install_Python_Lib
 
-	Set_Bt_Panel
 	Service_Add
 	Set_Firewall
 	
@@ -598,7 +593,7 @@ echo "
 "
 while [ "$go" != 'y' ] && [ "$go" != 'n' ]
 do
-	read -p "Do you want to install Bt-Panel to the $setup_path directory now?(y/n): " go;
+	read -p "Do you want to install Bt-Panel to the ${setup_path} directory now?(y/n): " go;
 done
 
 if [ "$go" == 'n' ];then
