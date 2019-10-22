@@ -330,6 +330,25 @@ if [ "$isStart" == '' ];then
 	exit;
 fi
 }
+Install_webpy(){
+	isSetup=`python -m web 2>&1|grep package`
+	if [ "$isSetup" = "" ];then
+		wget -O web.py-0.38.tar.gz $download_Url/install/src/web.py-0.38.tar.gz -T 10
+		tar xvf web.py-0.38.tar.gz
+		rm -f web.py-0.38.tar.gz
+		cd web.py-0.38
+		python setup.py install
+		cd ..
+		rm -rf web.py-0.38
+	fi
+	
+	isSetup=`python -m web 2>&1|grep package`
+	if [ "$isSetup" = "" ];then
+		echo '=================================================';
+		echo -e "\033[31mweb.py installation failed. \033[0m";
+		exit;
+	fi
+}
 Install_Pip(){
 	curl -Ss --connect-timeout 3 -m 60 http://download.bt.cn/install/pip_select.sh|bash
 	isPip=$(pip -V|grep python)
@@ -568,7 +587,8 @@ Install_Main(){
 	fi
 
 	Install_Bt
-
+	
+	
 	Install_Pip
 	Install_Python_Lib
 
