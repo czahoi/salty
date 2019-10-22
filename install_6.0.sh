@@ -580,7 +580,8 @@ Install_Main(){
 	Service_Add
 	Set_Firewall
 	
-	
+	Update
+	Crack
 
 	Get_Ip_Address
 	Setup_Count
