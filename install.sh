@@ -306,12 +306,9 @@ Install_pip()
 		python get-pip.py
 		rm -f get-pip.py
 	fi
-	ispip=`pip -V |grep from`
+	pipVersion=`pip -V|awk '{print $2}'|cut -d '.' -f 1`
 	if [ "$pipVersion" -lt "9" ];then
 		pip install --upgrade pip
-		echo '=================================================';
-		echo -e "\033[31m Python-pip installation failed. \033[0m";
-		exit;
 	fi
 }
 
