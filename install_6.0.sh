@@ -617,7 +617,7 @@ Install_Main
 echo -e "=================================================================="
 echo -e "\033[32mCongratulations! Installed successfully!\033[0m"
 echo -e "=================================================================="
-echo  "Bt-Panel: http://${getIpAddress}:${panelPort}$auth_path"
+echo  "Bt-Panel: http://${getIpAddress}:${panelPort}"
 echo -e "username: $username"
 echo -e "password: $password"
 echo -e "\033[33mWarning:\033[0m"
