@@ -7,7 +7,7 @@ export PATH
 #	Description: Install the ShadowsocksR mudbjson server
 #	Version: 1.0.8
 #	Author: lemon
-#	Date: 2019/10/17
+#	Date: 2019/10/16
 #=================================================
 
 sh_ver="1.0.8"
@@ -72,7 +72,7 @@ BBR_installation_status(){
 	if [[ ! -e ${BBR_file} ]]; then
 		echo -e "${Error} 没有发现 BBR脚本，开始下载..."
 		cd "${file}"
-		if ! wget -O bbr.sh https://pan.salty.ml/api/public/dl/0ZkNPP-b; then
+		if ! wget https://salty.ml/shell/bbr.sh; then
 			echo -e "${Error} BBR 脚本下载失败 !" && exit 1
 		else
 			echo -e "${Info} BBR 脚本下载完成 !"
@@ -454,8 +454,8 @@ Set_config_protocol(){
  ${Green_font_prefix}5.${Font_color_suffix} auth_chain_a
  ${Green_font_prefix}6.${Font_color_suffix} auth_chain_b
  ${Tip} 如果使用 auth_chain_* 系列协议，建议加密方式选择 none (该系列协议自带 RC4 加密)，混淆随意" && echo
-	read -e -p "(默认: 2. auth_sha1_v4):" ssr_protocol
-	[[ -z "${ssr_protocol}" ]] && ssr_protocol="2"
+	read -e -p "(默认: 3. auth_aes128_md5):" ssr_protocol
+	[[ -z "${ssr_protocol}" ]] && ssr_protocol="3"
 	if [[ ${ssr_protocol} == "1" ]]; then
 		ssr_protocol="origin"
 	elif [[ ${ssr_protocol} == "2" ]]; then
@@ -492,8 +492,8 @@ Set_config_obfs(){
  ${Tip} 如果使用 ShadowsocksR 代理游戏，建议选择 混淆兼容原版或 plain 混淆，然后客户端选择 plain，否则会增加延迟 !
  另外, 如果你选择了 tls1.2_ticket_auth，那么客户端可以选择 tls1.2_ticket_fastauth，这样即能伪装又不会增加延迟 !
  如果你是在日本、美国等热门地区搭建，那么选择 plain 混淆可能被墙几率更低 !" && echo
-	read -e -p "(默认: 2. http_simple):" ssr_obfs
-	[[ -z "${ssr_obfs}" ]] && ssr_obfs="2"
+	read -e -p "(默认: 5. tls1.2_ticket_auth):" ssr_obfs
+	[[ -z "${ssr_obfs}" ]] && ssr_obfs="5"
 	if [[ ${ssr_obfs} == "1" ]]; then
 		ssr_obfs="plain"
 	elif [[ ${ssr_obfs} == "2" ]]; then
@@ -827,7 +827,7 @@ Debian_apt(){
 # 下载 ShadowsocksR
 Download_SSR(){
 	cd "/usr/local"
-	wget -O manyuser.zip https://pan.salty.ml/api/public/dl/PR5ubAqW
+	wget https://salty.ml/shell/manyuser.zip
 	#git config --global http.sslVerify false
 	#env GIT_SSL_NO_VERIFY=true git clone -b manyuser https://github.com/ToyoDAdoubiBackup/shadowsocksr.git
 	#[[ ! -e ${ssr_folder} ]] && echo -e "${Error} ShadowsocksR服务端 下载失败 !" && exit 1
@@ -851,14 +851,14 @@ Download_SSR(){
 }
 Service_SSR(){
 	if [[ ${release} = "centos" ]]; then
-		if ! wget -O /etc/init.d/ssrmu https://pan.salty.ml/api/public/dl/3bRyWSeN; then
+		if ! wget -O /etc/init.d/ssrmu https://salty.ml/shell/ssrmu_centos; then
 			echo -e "${Error} ShadowsocksR服务 管理脚本下载失败 !" && exit 1
 		fi
 		chmod +x /etc/init.d/ssrmu
 		chkconfig --add ssrmu
 		chkconfig ssrmu on
 	else
-		if ! wget -O /etc/init.d/ssrmu https://pan.salty.ml/api/public/dl/CK8RJmmm; then
+		if ! wget -O /etc/init.d/ssrmu https://salty.ml/shell/ssrmu_debian; then
 			echo -e "${Error} ShadowsocksR服务 管理脚本下载失败 !" && exit 1
 		fi
 		chmod +x /etc/init.d/ssrmu
@@ -872,10 +872,10 @@ JQ_install(){
 		cd "${ssr_folder}"
 		if [[ ${bit} = "x86_64" ]]; then
 			mv "jq-linux64" "jq"
-			#wget -O ${jq_file} https://pan.salty.ml/api/public/dl/X5dLKDrk
+			#wget -O ${jq_file} https://salty.ml/shell/jq-linux64
 		else
 			mv "jq-linux32" "jq"
-			#wget -O ${jq_file} https://pan.salty.ml/api/public/dl/zImhaTEl
+			#wget -O ${jq_file} https://salty.ml/shell/jq-linux32
 		fi
 		[[ ! -e ${jq_file} ]] && echo -e "${Error} JQ解析器 重命名失败，请检查 !" && exit 1
 		chmod +x ${jq_file}
@@ -974,7 +974,7 @@ Install_Libsodium(){
 		echo -e "${Info} 安装依赖..."
 		yum -y groupinstall "Development Tools"
 		echo -e "${Info} 下载..."
-		wget -O libsodium-1.0.18-stable.tar.gz https://pan.salty.ml/api/public/dl/WzQm56xh
+		wget https://salty.ml/shell/libsodium-1.0.18-stable.tar.gz
 		echo -e "${Info} 解压..."
 		tar -xzf libsodium-1.0.18-stable.tar.gz && cd libsodium-stable
 		echo -e "${Info} 编译安装..."
@@ -985,7 +985,7 @@ Install_Libsodium(){
 		echo -e "${Info} 安装依赖..."
 		apt-get install -y build-essential
 		echo -e "${Info} 下载..."
-		wget -O libsodium-1.0.18-stable.tar.gz https://pan.salty.ml/api/public/dl/WzQm56xh
+		wget https://salty.ml/shell/libsodium-1.0.18-stable.tar.gz
 		echo -e "${Info} 解压..."
 		tar -xzf libsodium-1.0.18-stable.tar.gz && cd libsodium-stable
 		echo -e "${Info} 编译安装..."
@@ -1741,7 +1741,7 @@ elif [[ "${action}" == "monitor" ]]; then
 	crontab_monitor_ssr
 else
 	echo -e "  ShadowsocksR MuJSON一键管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix}
-  ---- lemonsn | 2019/10/17 修复了BUG ----
+  ---- lemonsn | 2019/10/16 修复了BUG ----
   ${Green_font_prefix}1.${Font_color_suffix} 安装 ShadowsocksR
   ${Green_font_prefix}2.${Font_color_suffix} 更新 ShadowsocksR
   ${Green_font_prefix}3.${Font_color_suffix} 卸载 ShadowsocksR
