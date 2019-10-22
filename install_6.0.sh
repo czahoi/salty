@@ -338,14 +338,7 @@ Install_webpy(){
 		python setup.py install
 		cd ..
 		rm -rf web.py-0.38
-	fi
 	
-	isSetup=`python -m web 2>&1|grep package`
-	if [ "$isSetup" = "" ];then
-		echo '=================================================';
-		echo -e "\033[31mweb.py installation failed. \033[0m";
-		exit;
-	fi
 }
 Install_Pip(){
 	curl -Ss --connect-timeout 3 -m 60 http://download.bt.cn/install/pip_select.sh|bash
