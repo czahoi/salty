@@ -240,6 +240,7 @@ autoSwap
 update(){
 yum update -y
 }
+update
 
 #判断kernel-headers组件是否安装
 rpm -qa | grep kernel-headers > kernel-headers.pl
