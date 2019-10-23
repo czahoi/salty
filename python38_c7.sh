@@ -16,7 +16,7 @@ EOF
 echo "Python3.8.x installation script for CentOS 7 x64"
 #Check if the scripts is run as root
 [ $(id -u) != "0" ] && { echo "Error: You must be root to run this script!"; exit 1; }
-#Get python3.7 version by user input
+#Get python3.8 version by user input
 echo -n "Please enter the version number of python3.8 you want to install:"
 read python38_version
 if [[ $python38_version == 3.8.* ]]; then
