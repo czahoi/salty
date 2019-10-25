@@ -213,7 +213,7 @@ EOF
 autoSwap()
 {
 	swap=`free |grep Swap|awk '{print $2}'`
-	if [ $swap -gt 0 ];then
+	if [ $swap -gt 1 ];then
         echo "Swap total sizse: $swap";
 		return;
 	fi
@@ -226,7 +226,7 @@ autoSwap()
     swapon $swapFile
     echo "$swapFile    swap    swap    defaults    0 0" >> /etc/fstab
 	swap=`free |grep Swap|awk '{print $2}'`
-	if [ $swap -gt 0 ];then
+	if [ $swap -gt 1 ];then
         echo "Swap total sizse: $swap";
 		return;
 	fi
