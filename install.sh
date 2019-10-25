@@ -236,10 +236,6 @@ autoSwap()
 }
 autoSwap
 
-#设置临时交换分区使用率
-#避免小内存机器内存不够
-sysctl vm.swappiness=60
-
 #设置永久交换分区使用率
 #重启后生效
 swappiness()
@@ -256,6 +252,10 @@ swappiness()
 	fi
 }
 swappiness
+
+#设置临时交换分区使用率
+#避免小内存机器内存不够
+sysctl vm.swappiness=60
 
 #自动升级系统
 update(){
