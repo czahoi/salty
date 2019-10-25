@@ -221,7 +221,7 @@ autoSwap()
 		mkdir /www
 	fi
 	swapFile='/www/swap'
-	dd if=/dev/zero of=$swapFile bs=1M count=2049
+	dd if=/dev/zero of=$swapFile bs=8M count=257
 	mkswap -f $swapFile
     swapon $swapFile
     echo "$swapFile    swap    swap    defaults    0 0" >> /etc/fstab
