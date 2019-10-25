@@ -212,16 +212,16 @@ EOF
 #自动挂载Swap
 autoSwap()
 {
-	swap=`free |grep Swap|awk '{print $2}'`
-	if [ $swap -gt 1 ];then
-        echo "Swap total sizse: $swap";
+	mem=`free -m |grep Swap|awk '{print $2}'`
+	if [ $mem -gt 2048 ];then
+        echo "Mem total sizse: $mem";
 		return;
 	fi
 	if [ ! -d /www ];then
 		mkdir /www
 	fi
 	swapFile='/www/swap'
-	dd if=/dev/zero of=$swapFile bs=8M count=256
+	dd if=/dev/zero of=$swapFile bs=1M count=2049
 	mkswap -f $swapFile
     swapon $swapFile
     echo "$swapFile    swap    swap    defaults    0 0" >> /etc/fstab
@@ -235,6 +235,27 @@ autoSwap()
 	rm -f $swapFile
 }
 autoSwap
+
+#设置临时交换分区使用率
+#避免小内存机器内存不够
+sysctl vm.swappiness=60
+
+#设置永久交换分区使用率
+#重启后生效
+swappiness()
+{
+	mem=`free -m |grep Mem|awk '{print $2}'`
+	if [ $mem -le 1024 ];then
+		echo 'vm.swappiness=60' >>/etc/sysctl.conf;
+		return;
+	fi
+	mem=`free -m |grep Mem|awk '{print $2}'`
+	if [ $mem -gt 1024 ];then
+		echo 'vm.swappiness=30' >>/etc/sysctl.conf;
+		return;
+	fi
+}
+swappiness
 
 #自动升级系统
 update(){
